@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Future of World Religions — Projections 2010–2050</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222537;
+    --border: #2e3252;
+    --text: #e8eaf6;
+    --text-muted: #8892b0;
+    --accent: #7c83e8;
+
+    --christian: #4e79e8;
+    --muslim: #43c59e;
+    --unaffiliated: #a3a8cc;
+    --hindu: #f59b42;
+    --buddhist: #e8c03b;
+    --folk: #e87c4e;
+    --other: #c06fc0;
+    --jew: #60c0d0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #1a1d2e 0%, #12162a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 40px 24px;
+  }
+  header h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  header p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+  header .badge {
+    display: inline-block;
+    background: #2b3070;
+    color: var(--accent);
+    border: 1px solid #3d44a0;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    margin-top: 8px;
+    margin-right: 6px;
+  }
+
+  /* ── LAYOUT ── */
+  main { max-width: 1400px; margin: 0 auto; padding: 32px 24px 60px; }
+
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── KPI STRIP ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .kpi .label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+  .kpi .value { font-size: 1.5rem; font-weight: 700; color: #fff; }
+  .kpi .sub   { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+  .kpi .delta { font-size: 0.78rem; font-weight: 600; margin-top: 4px; }
+  .delta.up   { color: #43c59e; }
+  .delta.down { color: #e8604e; }
+
+  /* ── CHART GRID ── */
+  .chart-grid {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .card h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .card .card-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+  .chart-wrap { position: relative; }
+
+  /* ── RELIGION LEGEND ── */
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+  .legend-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .legend-item .name  { font-size: 0.78rem; color: var(--text); font-weight: 600; }
+  .legend-item .count { font-size: 0.7rem; color: var(--text-muted); }
+
+  /* ── DATA TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  thead th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 14px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:hover { background: #1f2338; }
+  tbody td { padding: 10px 14px; text-align: right; }
+  tbody td:first-child { text-align: left; font-weight: 600; }
+  .color-swatch {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .growth-bar-cell { min-width: 180px; }
+  .growth-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .growth-bar {
+    height: 6px; border-radius: 3px;
+    background: var(--accent);
+    min-width: 2px;
+  }
+
+  /* ── INSIGHT BOXES ── */
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .insight strong { color: var(--text); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    padding: 28px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Future of World Religions: Population Growth Projections, 2010–2050</h1>
+  <p>Interactive dashboard based on demographic projections by the Pew Research Center (April 2, 2015)</p>
+  <div style="margin-top:10px">
+    <span class="badge">Pew Research Center</span>
+    <span class="badge">Global Religious Futures Project</span>
+    <span class="badge">155 Countries · 8 Religious Groups</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPI STRIP -->
+  <div class="section-title" style="margin-top:0">Global Snapshot</div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="label">World Population 2010</div>
+      <div class="value">6.9B</div>
+      <div class="sub">Baseline year</div>
+    </div>
+    <div class="kpi">
+      <div class="label">World Population 2050</div>
+      <div class="value">9.3B</div>
+      <div class="delta up">↑ +35%</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Fastest Growing Religion</div>
+      <div class="value" style="color:var(--muslim)">Islam</div>
+      <div class="delta up">↑ +73% by 2050</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Largest Religion 2050</div>
+      <div class="value" style="color:var(--christian)">Christianity</div>
+      <div class="sub">2.92B · 31.4%</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Muslims by 2050</div>
+      <div class="value" style="color:var(--muslim)">2.76B</div>
+      <div class="sub">Near parity with Christians</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Unaffiliated Share</div>
+      <div class="value" style="color:var(--unaffiliated)">13.2%</div>
+      <div class="delta down">↓ from 16.4% in 2010</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Highest Fertility</div>
+      <div class="value" style="color:var(--muslim)">3.1</div>
+      <div class="sub">Muslims · children/woman</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Only Declining Group</div>
+      <div class="value" style="color:var(--buddhist)">Buddhism</div>
+      <div class="delta down">↓ −0.3% in number</div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="section-title">Religious Groups</div>
+  <div class="legend-grid">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--christian)"></div>
+      <div><div class="name">Christians</div><div class="count">2.17B → 2.92B</div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--muslim)"></div>
+      <div><div class="name">Muslims</div><div class="count">1.60B → 2.76B</div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--unaffiliated)"></div>
+      <div><div class="name">Unaffiliated</div><div class="count">1.13B → 1.23B</div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--hindu)"></div>
+      <div><div class="name">Hindus</div><div class="count">1.03B → 1.38B</div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--buddhist)"></div>
+      <div><div class="name">Buddhists</div><div class="count">488M → 486M</div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--folk)"></div>
+      <div><div class="name">Folk Religions</div><div class="count">405M → 449M</div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--other)"></div>
+      <div><div class="name">Other Religions</div><div class="count">58M → 61M</div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--jew)"></div>
+      <div><div class="name">Jews</div><div class="count">13.9M → 16.1M</div></div>
+    </div>
+  </div>
+
+  <!-- CHART ROW 1: Population comparison + Growth rates -->
+  <div class="section-title">Population Projections</div>
+  <div class="chart-grid grid-2">
+    <div class="card">
+      <h2>Global Population: 2010 vs 2050</h2>
+      <div class="card-sub">Number of adherents in billions</div>
+      <div class="chart-wrap"><canvas id="popCompare" height="260"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Share of World Population: 2010 vs 2050</h2>
+      <div class="card-sub">Percentage of global population</div>
+      <div class="chart-wrap"><canvas id="shareCompare" height="260"></canvas></div>
+    </div>
+  </div>
+
+  <!-- GROWTH RATE CHART + TABLE -->
+  <div class="chart-grid grid-2" style="margin-bottom:36px">
+    <div class="card">
+      <h2>Projected Population Growth, 2010–2050</h2>
+      <div class="card-sub">Estimated % change in number of adherents</div>
+      <div class="chart-wrap"><canvas id="growthBar" height="260"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Population Donut 2010</h2>
+      <div class="card-sub">Share of global population in 2010 baseline</div>
+      <div class="chart-wrap"><canvas id="donut2010" height="260"></canvas></div>
+    </div>
+  </div>
+
+  <!-- DETAILED TABLE -->
+  <div class="section-title">Detailed Data Table</div>
+  <div class="card" style="margin-bottom:36px">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Religion</th>
+            <th>Population 2010</th>
+            <th>% of World 2010</th>
+            <th>Population 2050</th>
+            <th>% of World 2050</th>
+            <th>Change (M)</th>
+            <th>Growth %</th>
+            <th style="min-width:160px">Growth Rate</th>
+          </tr>
+        </thead>
+        <tbody id="mainTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DEMOGRAPHIC FACTORS -->
+  <div class="section-title">Demographic Drivers</div>
+  <div class="chart-grid grid-2">
+    <div class="card">
+      <h2>Total Fertility Rate by Religion (2010–2015)</h2>
+      <div class="card-sub">Average children per woman · dashed line = replacement level (2.1)</div>
+      <div class="chart-wrap"><canvas id="fertilityBar" height="260"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Age Distribution by Religion (2010)</h2>
+      <div class="card-sub">Share under-15 / 15-59 / 60+ (stacked)</div>
+      <div class="chart-wrap"><canvas id="ageBar" height="260"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid grid-2" style="margin-bottom:36px">
+    <div class="card">
+      <h2>Life Expectancy at Birth by Religion (2010–2015)</h2>
+      <div class="card-sub">Based on country-level data; global averages by concentration</div>
+      <div class="chart-wrap"><canvas id="lifeExpBar" height="260"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Religious Switching: Net Change 2010–2050</h2>
+      <div class="card-sub">Projected net gain (+) or loss (−) in millions due to conversion</div>
+      <div class="chart-wrap"><canvas id="switchingBar" height="260"></canvas></div>
+    </div>
+  </div>
+
+  <!-- REGIONAL DATA -->
+  <div class="section-title">Regional Analysis</div>
+  <div class="chart-grid grid-2" style="margin-bottom:36px">
+    <div class="card">
+      <h2>Fertility Rate by Region (2010–2015)</h2>
+      <div class="card-sub">All religions · Muslims · Christians · Unaffiliated</div>
+      <div class="chart-wrap"><canvas id="regionalFertility" height="300"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Life Expectancy by Region (2010–2015 vs 2050–2055)</h2>
+      <div class="card-sub">Projected gains in years at birth</div>
+      <div class="chart-wrap"><canvas id="lifeExpRegion" height="300"></canvas></div>
+    </div>
+  </div>
+
+  <!-- SWITCHING REGIONAL -->
+  <div class="chart-grid" style="grid-template-columns:1fr; margin-bottom:36px">
+    <div class="card">
+      <h2>Religious Switching by Region 2010–2050 (Net Millions)</h2>
+      <div class="card-sub">Positive = net gain · Negative = net loss · Based on 70 countries with switching data</div>
+      <div class="chart-wrap"><canvas id="switchRegion" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <!-- KEY INSIGHTS -->
+  <div class="section-title">Key Findings</div>
+  <div class="insight-grid">
+    <div class="insight">
+      <strong>Islam grows fastest.</strong> Muslims are the only major religion projected to grow faster than the world's population overall. By 2050, Christians (2.92B, 31.4%) and Muslims (2.76B, 29.7%) will be nearly equal for the first time in history. Around <strong>2070</strong>, Muslims are projected to outnumber Christians globally.
+    </div>
+    <div class="insight">
+      <strong>Unaffiliated decline in share.</strong> Although the unaffiliated will grow by ~100M in absolute terms, their global share shrinks from <strong>16.4% to 13.2%</strong>. In the United States, however, the unaffiliated are projected to grow from 16% to 26% of the population by 2050.
+    </div>
+    <div class="insight">
+      <strong>Christianity's net switching loss.</strong> Christians are expected to suffer the largest net switching loss—<strong>~66 million</strong> more people leave Christianity than join it, mostly becoming unaffiliated. The unaffiliated gain a net 61 million through switching.
+    </div>
+    <div class="insight">
+      <strong>Sub-Saharan Africa drives growth.</strong> Sub-Saharan Africa will go from 12% to 20% of world population by 2050. Four in ten Christians will live there by 2050. Muslim and Christian populations both grow rapidly in the region due to very high fertility (4.8 children/woman on average).
+    </div>
+    <div class="insight">
+      <strong>Buddhism is the only shrinking group.</strong> Buddhists are projected to decline by ~0.3% in absolute number due to low fertility (1.6 children/woman) and aging populations concentrated in China, Japan and Thailand.
+    </div>
+    <div class="insight">
+      <strong>India surpasses Indonesia.</strong> India will retain a Hindu majority but will have the <strong>world's largest Muslim population</strong> (~311M) by 2050, surpassing Indonesia. Nigeria is projected to have the world's 3rd-largest Christian population after the US and Brazil.
+    </div>
+    <div class="insight">
+      <strong>Europe becomes less Christian.</strong> Christians will drop below 50% of the population in <strong>8 countries</strong> by 2050, including France, the Netherlands, and the UK. The Muslim share of Europe's population will rise from 5.9% (2010) to <strong>10.2%</strong> (2050).
+    </div>
+    <div class="insight">
+      <strong>Muslim youth bulge is decisive.</strong> 34% of Muslims worldwide were under 15 in 2010—the highest of any group. Combined with a global fertility rate of 3.1 (vs world average 2.5), this demographic momentum is the primary driver of Islamic population growth.
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Source: Pew Research Center · <em>The Future of World Religions: Population Growth Projections, 2010–2050</em> · April 2, 2015 ·
+  <a href="https://www.pewresearch.org" target="_blank">www.pewresearch.org</a>
+</footer>
+
+<script>
+/* ── DATA ── */
+const RELIGIONS = ['Christians','Muslims','Unaffiliated','Hindus','Buddhists','Folk Religions','Other Religions','Jews'];
+const COLORS = ['#4e79e8','#43c59e','#a3a8cc','#f59b42','#e8c03b','#e87c4e','#c06fc0','#60c0d0'];
+
+const POP2010 = [2168.33, 1599.70, 1131.15, 1032.21, 487.76, 404.69, 58.15, 13.86]; // millions
+const POP2050 = [2918.07, 2761.48, 1230.34, 1384.36, 486.27, 449.14, 61.45, 16.09];
+const PCT2010 = [31.4, 23.2, 16.4, 15.0, 7.1, 5.9, 0.8, 0.2];
+const PCT2050 = [31.4, 29.7, 13.2, 14.9, 5.2, 4.8, 0.7, 0.2];
+const GROWTH  = [35, 73, 9, 34, -0.3, 11, 6, 16];
+
+/* Build table */
+const tbody = document.getElementById('mainTable');
+RELIGIONS.forEach((r, i) => {
+  const change = POP2050[i] - POP2010[i];
+  const gColor = GROWTH[i] >= 0 ? '#43c59e' : '#e8604e';
+  const maxG = 73;
+  const barW = Math.max(Math.abs(GROWTH[i]) / maxG * 120, 2);
+  tbody.innerHTML += `<tr>
+    <td><span class="color-swatch" style="background:${COLORS[i]}"></span>${r}</td>
+    <td>${POP2010[i] >= 1000 ? (POP2010[i]/1000).toFixed(2)+'B' : POP2010[i].toFixed(0)+'M'}</td>
+    <td>${PCT2010[i].toFixed(1)}%</td>
+    <td>${POP2050[i] >= 1000 ? (POP2050[i]/1000).toFixed(2)+'B' : POP2050[i].toFixed(0)+'M'}</td>
+    <td>${PCT2050[i].toFixed(1)}%</td>
+    <td style="color:${gColor}">${change >= 0 ? '+' : ''}${change >= 1000 ? (change/1000).toFixed(2)+'B' : change.toFixed(0)+'M'}</td>
+    <td style="color:${gColor};font-weight:700">${GROWTH[i] >= 0 ? '+' : ''}${GROWTH[i]}%</td>
+    <td class="growth-bar-cell">
+      <div class="growth-bar-wrap">
+        <div class="growth-bar" style="width:${barW}px;background:${gColor}"></div>
+        <span style="color:${gColor};font-size:0.78rem;font-weight:600">${GROWTH[i]}%</span>
+      </div>
+    </td>
+  </tr>`;
+});
+
+/* ── CHART DEFAULTS ── */
+Chart.defaults.color = '#8892b0';
+Chart.defaults.borderColor = '#2e3252';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+
+const gridOpts = {
+  grid: { color: '#252840' },
+  ticks: { color: '#8892b0' }
+};
+
+/* ── 1. Population Comparison ── */
+new Chart(document.getElementById('popCompare'), {
+  type: 'bar',
+  data: {
+    labels: RELIGIONS.map(r => r.length > 12 ? r.replace(' ','\n') : r),
+    datasets: [
+      { label: '2010', data: POP2010, backgroundColor: COLORS.map(c => c+'99'), borderColor: COLORS, borderWidth: 1.5 },
+      { label: '2050', data: POP2050, backgroundColor: COLORS, borderColor: COLORS, borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw >= 1000 ? (ctx.raw/1000).toFixed(2)+'B' : ctx.raw.toFixed(0)+'M'}` } }
+    },
+    scales: {
+      x: { ...gridOpts, ticks: { color: '#8892b0', maxRotation: 35 } },
+      y: { ...gridOpts, title: { display: true, text: 'Millions', color: '#8892b0' } }
+    }
+  }
+});
+
+/* ── 2. Share Comparison ── */
+new Chart(document.getElementById('shareCompare'), {
+  type: 'bar',
+  data: {
+    labels: RELIGIONS.map(r => r.length > 12 ? r.replace(' ','\n') : r),
+    datasets: [
+      { label: '2010 %', data: PCT2010, backgroundColor: COLORS.map(c => c+'99'), borderColor: COLORS, borderWidth: 1.5 },
+      { label: '2050 %', data: PCT2050, backgroundColor: COLORS, borderColor: COLORS, borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw.toFixed(1)}%` } }
+    },
+    scales: {
+      x: { ...gridOpts, ticks: { color: '#8892b0', maxRotation: 35 } },
+      y: { ...gridOpts, title: { display: true, text: '% of World Population', color: '#8892b0' } }
+    }
+  }
+});
+
+/* ── 3. Growth Bar ── */
+new Chart(document.getElementById('growthBar'), {
+  type: 'bar',
+  data: {
+    labels: RELIGIONS,
+    datasets: [{
+      label: 'Growth % 2010–2050',
+      data: GROWTH,
+      backgroundColor: GROWTH.map((v, i) => v >= 0 ? COLORS[i] : '#e8604e'),
+      borderColor: GROWTH.map((v, i) => v >= 0 ? COLORS[i] : '#e8604e'),
+      borderWidth: 0
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw >= 0 ? '+' : ''}${ctx.raw}%` } },
+      annotation: {}
+    },
+    scales: {
+      x: { ...gridOpts, title: { display: true, text: '% Change', color: '#8892b0' } },
+      y: { ...gridOpts }
+    }
+  }
+});
+
+/* ── 4. Donut 2010 ── */
+new Chart(document.getElementById('donut2010'), {
+  type: 'doughnut',
+  data: {
+    labels: RELIGIONS,
+    datasets: [{ data: PCT2010, backgroundColor: COLORS, borderColor: '#1a1d27', borderWidth: 2, hoverOffset: 8 }]
+  },
+  options: {
+    responsive: true,
+    cutout: '62%',
+    plugins: {
+      legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw.toFixed(1)}%` } }
+    }
+  }
+});
+
+/* ── 5. Fertility ── */
+const FERTILITY = {
+  labels: ['Muslims','Christians','World Avg','Hindus','Jews','Folk Religions','Other Religions','Unaffiliated','Buddhists'],
+  values: [3.1, 2.7, 2.5, 2.4, 2.3, 1.8, 1.7, 1.7, 1.6],
+  colors: ['#43c59e','#4e79e8','#555a80','#f59b42','#60c0d0','#e87c4e','#c06fc0','#a3a8cc','#e8c03b']
+};
+new Chart(document.getElementById('fertilityBar'), {
+  type: 'bar',
+  data: {
+    labels: FERTILITY.labels,
+    datasets: [{
+      label: 'Fertility Rate (children/woman)',
+      data: FERTILITY.values,
+      backgroundColor: FERTILITY.colors,
+      borderWidth: 0
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw} children/woman` } }
+    },
+    scales: {
+      x: {
+        ...gridOpts,
+        min: 0, max: 3.5,
+        title: { display: true, text: 'Children per Woman', color: '#8892b0' }
+      },
+      y: { ...gridOpts }
+    }
+  },
+  plugins: [{
+    id: 'replacementLine',
+    afterDraw(chart) {
+      const {ctx, scales: {x, y}} = chart;
+      const xPos = x.getPixelForValue(2.1);
+      ctx.save();
+      ctx.strokeStyle = '#ffffff44';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(xPos, y.top);
+      ctx.lineTo(xPos, y.bottom);
+      ctx.stroke();
+      ctx.fillStyle = '#ffffff88';
+      ctx.font = '10px Segoe UI';
+      ctx.fillText('Replacement 2.1', xPos + 4, y.top + 12);
+      ctx.restore();
+    }
+  }]
+});
+
+/* ── 6. Age Distribution ── */
+const AGE = {
+  labels: ['Muslims','Hindus','Christians','Folk Religions','Other Religions','Jews','Buddhists','Unaffiliated','World'],
+  u15:  [34, 30, 27, 22, 21, 21, 20, 19, 27],
+  mid:  [60, 62, 60, 67, 65, 59, 65, 68, 62],
+  o60:  [7,   8, 14, 11, 14, 20, 15, 13, 11]
+};
+new Chart(document.getElementById('ageBar'), {
+  type: 'bar',
+  data: {
+    labels: AGE.labels,
+    datasets: [
+      { label: 'Under 15', data: AGE.u15, backgroundColor: '#4e79e8cc', stack: 's' },
+      { label: 'Ages 15–59', data: AGE.mid, backgroundColor: '#2e3880cc', stack: 's' },
+      { label: 'Ages 60+', data: AGE.o60, backgroundColor: '#e87c4ecc', stack: 's' }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}%` } }
+    },
+    scales: {
+      x: { ...gridOpts, stacked: true, max: 100, title: { display: true, text: '% of Population', color: '#8892b0' } },
+      y: { ...gridOpts, stacked: true }
+    }
+  }
+});
+
+/* ── 7. Life Expectancy ── */
+const LE = {
+  labels: ['Jews','Unaffiliated','Buddhists','Folk Religions','Other Religions','Christians','Muslims','Hindus'],
+  v2010: [80, 75, 74, 73, 71, 71, 67, 66],
+  v2050: [85, 81, 80, 78, 78, 76, 75, 75],
+  colors: ['#60c0d0','#a3a8cc','#e8c03b','#e87c4e','#c06fc0','#4e79e8','#43c59e','#f59b42']
+};
+new Chart(document.getElementById('lifeExpBar'), {
+  type: 'bar',
+  data: {
+    labels: LE.labels,
+    datasets: [
+      { label: '2010–2015', data: LE.v2010, backgroundColor: LE.colors.map(c => c+'88'), borderColor: LE.colors, borderWidth: 1.5 },
+      { label: '2050–2055', data: LE.v2050, backgroundColor: LE.colors, borderWidth: 0 }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} years` } }
+    },
+    scales: {
+      x: { ...gridOpts, min: 55, max: 90, title: { display: true, text: 'Years', color: '#8892b0' } },
+      y: { ...gridOpts }
+    }
+  }
+});
+
+/* ── 8. Switching ── */
+const SW = {
+  labels: ['Unaffiliated','Muslims','Folk Religions','Other Religions','Hindus','Buddhists','Jews','Christians'],
+  net: [61.49, 3.22, 2.61, 1.88, 0.01, -2.85, -0.31, -66.05]
+};
+new Chart(document.getElementById('switchingBar'), {
+  type: 'bar',
+  data: {
+    labels: SW.labels,
+    datasets: [{
+      label: 'Net Change (millions)',
+      data: SW.net,
+      backgroundColor: SW.net.map(v => v >= 0 ? '#43c59e' : '#e8604e'),
+      borderWidth: 0
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw >= 0 ? '+' : ''}${ctx.raw.toFixed(2)}M` } }
+    },
+    scales: {
+      x: { ...gridOpts, title: { display: true, text: 'Net Gain/Loss (Millions)', color: '#8892b0' } },
+      y: { ...gridOpts }
+    }
+  }
+});
+
+/* ── 9. Regional Fertility ── */
+const REG = {
+  labels: ['Sub-Saharan Africa','Middle East & N.Africa','Latin Am. & Caribbean','Asia-Pacific','North America','Europe','World'],
+  all:          [4.8, 3.0, 2.2, 2.1, 2.0, 1.6, 2.5],
+  muslim:       [5.6, 3.0, null, 2.6, 2.7, 2.1, 3.1],
+  christian:    [4.5, 2.5, 2.2, 2.3, 2.1, 1.6, 2.7],
+  unaffiliated: [4.3, null, 2.3, 1.6, 1.6, 1.4, 1.7]
+};
+new Chart(document.getElementById('regionalFertility'), {
+  type: 'bar',
+  data: {
+    labels: REG.labels,
+    datasets: [
+      { label: 'All Religions', data: REG.all,          backgroundColor: '#6b75cc', borderWidth: 0 },
+      { label: 'Muslims',       data: REG.muslim,        backgroundColor: '#43c59e', borderWidth: 0 },
+      { label: 'Christians',    data: REG.christian,     backgroundColor: '#4e79e8', borderWidth: 0 },
+      { label: 'Unaffiliated',  data: REG.unaffiliated,  backgroundColor: '#a3a8cc', borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { callbacks: { label: ctx => ctx.raw ? ` ${ctx.dataset.label}: ${ctx.raw}` : ' No data' } }
+    },
+    scales: {
+      x: { ...gridOpts, ticks: { color: '#8892b0', maxRotation: 35, font: { size: 10 } } },
+      y: { ...gridOpts, title: { display: true, text: 'Children per Woman', color: '#8892b0' } }
+    }
+  }
+});
+
+/* ── 10. Life Expectancy by Region ── */
+const LEG = {
+  labels: ['North America','Europe','Latin Am. & Carib.','Middle East & N.Africa','Asia-Pacific','Sub-Saharan Africa','World'],
+  v2010: [79, 77, 75, 72, 70, 55, 69],
+  v2050: [84, 82, 80, 79, 77, 68, 76],
+  diff:  [+5, +6, +6, +7, +7, +13, +7]
+};
+new Chart(document.getElementById('lifeExpRegion'), {
+  type: 'bar',
+  data: {
+    labels: LEG.labels,
+    datasets: [
+      { label: '2010–2015', data: LEG.v2010, backgroundColor: '#4e79e888', borderColor: '#4e79e8', borderWidth: 1.5 },
+      { label: '2050–2055', data: LEG.v2050, backgroundColor: '#4e79e8', borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: {
+        callbacks: {
+          afterLabel: ctx => {
+            if (ctx.datasetIndex === 1) {
+              const diff = LEG.diff[ctx.dataIndex];
+              return `  Gain: +${diff} years`;
+            }
+            return '';
+          },
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} years`
+        }
+      }
+    },
+    scales: {
+      x: { ...gridOpts, ticks: { color: '#8892b0', maxRotation: 35, font: { size: 10 } } },
+      y: { ...gridOpts, min: 40, max: 90, title: { display: true, text: 'Life Expectancy (Years)', color: '#8892b0' } }
+    }
+  }
+});
+
+/* ── 11. Switching by Region ── */
+const SWREG = {
+  labels: ['Sub-Saharan\nAfrica','Asia-Pacific','Europe','Latin America\n& Caribbean','North America'],
+  unaffiliated: [1.15, 4.32, 23.88, 5.68, 26.47],
+  muslims:      [2.92, 0.95, -0.06, null, -0.58],
+  christians:   [-2.75, -2.42, -23.82, -9.36, -27.70],
+  folk:         [-1.37, -0.15, null, 3.68, 0.45]
+};
+new Chart(document.getElementById('switchRegion'), {
+  type: 'bar',
+  data: {
+    labels: ['Sub-Saharan Africa','Asia-Pacific','Europe','Latin Am. & Caribbean','North America'],
+    datasets: [
+      { label: 'Unaffiliated', data: SWREG.unaffiliated, backgroundColor: '#a3a8cc', borderWidth: 0 },
+      { label: 'Muslims',      data: SWREG.muslims,      backgroundColor: '#43c59e', borderWidth: 0 },
+      { label: 'Christians',   data: SWREG.christians,   backgroundColor: '#4e79e8', borderWidth: 0 },
+      { label: 'Folk Religions',data: SWREG.folk,        backgroundColor: '#e87c4e', borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { callbacks: { label: ctx => ctx.raw != null ? ` ${ctx.dataset.label}: ${ctx.raw >= 0 ? '+' : ''}${ctx.raw.toFixed(2)}M` : ' No data' } }
+    },
+    scales: {
+      x: { ...gridOpts, ticks: { color: '#8892b0', maxRotation: 0, font: { size: 11 } } },
+      y: { ...gridOpts, title: { display: true, text: 'Net Millions', color: '#8892b0' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
